@@ -5,12 +5,18 @@ import {NavLink} from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import Paginator from '../Paginator/Paginator';
 import { RootStateType } from '../../store/store';
+import { useDebounce } from '@uidotdev/usehooks';
 
 export default function MainLeague() {
   const dispatch = useDispatch()
   const currentLeaguesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.leaguesPage)
+  const leaguesSeacrhFilter = useSelector((state: RootStateType) => state.searchInfoReducer.leaguesSearchFilter)
+
   const [leaguesInfo, setLeguesInfo] = useState<any>([])
   const [maxPagesCount, setMaxPagesCount] = useState<number>(1)
+
+  const debouncedSearchTerm = useDebounce(leaguesSeacrhFilter, 500);
+
   const maxElementsOnPage = 15;
 
   useEffect(() => {
@@ -23,7 +29,6 @@ export default function MainLeague() {
         });
 
         setLeguesInfo(response.data.competitions.slice(((currentLeaguesPage) * maxElementsOnPage) , (currentLeaguesPage + 1) * maxElementsOnPage))
-        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -45,14 +50,41 @@ export default function MainLeague() {
               setMaxPagesCount(Math.ceil(response.data.count / maxElementsOnPage))
               console.log(maxPagesCount)
           } catch (error: any) {
-              if (error.message == 'Request failed with status code 429') {
-                  alert('Слишеом много запросов! Подождите')
-              }
+              // if (error.message == 'Request failed with status code 429') {
+              //     alert('Слишеом много запросов! Подождите')
+              // }
           }
       };
 
       fetchData();
   }, []);
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`/v4/competitions`, {
+                headers: {
+                    'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                },
+            });
+
+            console.log(response.data, "asdadasd")
+            const filteredElements = response.data.competitions.filter((item: any) => item.name.toLowerCase().includes(leaguesSeacrhFilter.toLowerCase()));
+            setLeguesInfo(filteredElements)
+            setMaxPagesCount(Math.ceil(filteredElements.length / maxElementsOnPage))
+        } catch (error: any) {
+            if (error.message == 'Request failed with status code 429') {
+                alert('Слишеом много запросов! Подождите')
+            }
+        }
+    };
+
+    fetchData();
+  }, [leaguesSeacrhFilter])
+
+
 
   const onPageChange = (newPage: number) => {
       if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentLeaguesPage)) {
@@ -65,7 +97,7 @@ export default function MainLeague() {
     <main className="main main-leagues">
         <div className="main-leagues-content container">
             <div className="main-search">
-                <input className="main-search__field" type="text" placeholder="Поиск" />
+                <input className="main-search__field" type="text" placeholder="Поиск" onChange={(e) => ( dispatch({type: "changeLeaguesFilter", newFilter: e.target.value}))}/>
                 <img className="main-search__icon" src={searchIcon} alt="serachIcon" />
             </div>
             <div className="main-leagues__list">

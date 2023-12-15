@@ -3,25 +3,23 @@ import axios from 'axios';
 import Match from './Match'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStateType } from '../../store/store';
+
 import Paginator from '../Paginator/Paginator';
 
 //Компонент высшего порядка, возвращающий 
 export default function LeagueMatches() {
     const dispatch = useDispatch()
-    const currentleaguePage = useSelector((store: RootStateType) => store.leaguesInfoReducer.currentLeagueId)
-    const currentLeagueMatchesPage =  useSelector((store: RootStateType) => store.pagesInfoReducer.leaguePage)
+    const currentleaguePage = useSelector((state: RootStateType) => state.leaguesInfoReducer.currentLeagueId)
+    const currentLeagueMatchesPage =  useSelector((state: RootStateType) => state.pagesInfoReducer.leaguePage)
+
     const [matchesInfo, setMatchesInfo] = useState([])
     
-    const [startDate, setStartDate] = useState<string | undefined>();
+    const [startDate, setStartDate] = useState <string | undefined>();
     const [endDate, setEndDate] = useState<string | undefined>('');
     const [maxPagesCount, setMaxPagesCount] = useState<any>(1)
     const [dataLoadingStatus, setLoadingStatus] = useState<string>('Данные загружаются')
 
     const maxElementsOnPage = 7;
-
-    // useEffect(() => {
-    //     console.log()
-    // }, [matchesInfo])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -98,7 +96,6 @@ export default function LeagueMatches() {
     return (
         <div className="matches-content container">
             <div className="breadcrumbs">
-
                 {breadcrumbsPath.map((item: string, index: number) => (
                     index < breadcrumbsPath.length - 1 ?
                     <React.Fragment key={index}>

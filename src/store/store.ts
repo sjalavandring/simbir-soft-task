@@ -15,11 +15,19 @@ type LeaguesInfoType = {
     currentLeagueId: number,
 }
 
+type searchInfoType = {
+    teamsSearchFilter: string,
+    leaguesSearchFilter: string,
+}
+
 type RootStateType = {
     pagesInfoReducer: PagesInfoType,
     teamsInfoReducer: TeamsInfoType,
     leaguesInfoReducer: LeaguesInfoType,
+    searchInfoReducer: searchInfoType,
 }
+
+
 
 let pagesInfo: PagesInfoType = {
     teamsPage: 0,
@@ -35,6 +43,12 @@ let teamsInfo: TeamsInfoType = {
 let leaguesInfo: LeaguesInfoType = {
     currentLeagueId: 2013,
 }
+
+let searchInfo: searchInfoType = {
+    teamsSearchFilter: '',
+    leaguesSearchFilter: '',
+}
+
 
 let pagesInfoReducer = (state = pagesInfo, action: {type: string, newPage: number},) => {
     switch (action.type) {
@@ -54,7 +68,7 @@ let pagesInfoReducer = (state = pagesInfo, action: {type: string, newPage: numbe
 let teamsInfoReducer = (state = teamsInfo, action: {type: string, newTeamId: number},) => {
     switch (action.type) {
         case "changeCurrentTeamId":
-            return {...pagesInfo, currentTeamId: action.newTeamId}
+            return {...teamsInfo, currentTeamId: action.newTeamId}
         default: 
             return state
     }
@@ -63,14 +77,24 @@ let teamsInfoReducer = (state = teamsInfo, action: {type: string, newTeamId: num
 let leaguesInfoReducer = (state = leaguesInfo, action: {type: string, newLeagueId: number},) => {
     switch (action.type) {
         case "changeCurrentLeagueId": 
-        console.log(action.newLeagueId)
-            return {...pagesInfo, currentLeagueId: action.newLeagueId}
+            return {...leaguesInfo, currentLeagueId: action.newLeagueId}
         default: 
             return state
     }
 }
 
-const rootReducer = combineReducers({pagesInfoReducer, teamsInfoReducer, leaguesInfoReducer})
+let searchInfoReducer = (state = searchInfo, action: {type: string, newFilter: 'string'}) => {
+    switch (action.type) {
+        case "changeTeamsFilter": 
+            return {...searchInfo, teamsSearchFilter: action.newFilter}
+        case "changeLeaguesFilter": 
+            return {...searchInfo, leaguesSearchFilter: action.newFilter}
+        default: 
+            return state
+    }
+}
+
+const rootReducer = combineReducers({pagesInfoReducer, teamsInfoReducer, leaguesInfoReducer, searchInfoReducer})
 
 const store = createStore(rootReducer)
 
