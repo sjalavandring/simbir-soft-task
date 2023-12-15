@@ -2,12 +2,16 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 import searchIcon from "../../img/search-icon.png"
 import {NavLink} from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Paginator from '../Paginator/Paginator';
+import { RootStateType } from '../../store/store';
 
 export default function MainLeague() {
   const dispatch = useDispatch()
+  const currentLeaguesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.leaguesPage)
   const [leaguesInfo, setLeguesInfo] = useState<any>([])
+  const [maxPagesCount, setMaxPagesCount] = useState<number>(1)
+  const maxElementsOnPage = 15;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,31 +22,43 @@ export default function MainLeague() {
           },
         });
 
-        console.log(response.data);
-        setLeguesInfo(response.data.competitions)
+        setLeguesInfo(response.data.competitions.slice(((currentLeaguesPage) * maxElementsOnPage) , (currentLeaguesPage + 1) * maxElementsOnPage))
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
+  }, [currentLeaguesPage]);
+
+  useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const response = await axios.get(`/v4/competitions`, {
+                  headers: {
+                      'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                  },
+              });
+
+              console.log(response.data)
+              setMaxPagesCount(Math.ceil(response.data.count / maxElementsOnPage))
+              console.log(maxPagesCount)
+          } catch (error: any) {
+              if (error.message == 'Request failed with status code 429') {
+                  alert('Слишеом много запросов! Подождите')
+              }
+          }
+      };
+
+      fetchData();
   }, []);
 
-  const [currentPage, setCurrentPage] = useState(0);
-
   const onPageChange = (newPage: number) => {
-    console.log(`Switched to page ${newPage}`);
-    setCurrentPage(newPage);
-  };
-
-  const onNextPage = () => {
-    console.log('Next page clicked');
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, 10 - 1)); // Обновление текущей страницы
-  };
-
-  const onPrevPage = () => {
-    console.log('Previous page clicked');
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0)); // Обновление текущей страницы
+      if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentLeaguesPage)) {
+          console.log(`Switched to page ${newPage + 1}`);
+          dispatch({ type: "changeLeaguesPageTo", newPage: newPage });
+      }
   };
 
   return (
@@ -64,7 +80,7 @@ export default function MainLeague() {
             </div>
         </div>
 
-        <Paginator pageCount={10} currentPage={currentPage} onPageChange={onPageChange} />
+        <Paginator pageCount={maxPagesCount} currentPage={currentLeaguesPage} onPageChange={onPageChange} />
     </main>
   )
 }

@@ -33,14 +33,19 @@ let teamsInfo: TeamsInfoType = {
 }
 
 let leaguesInfo: LeaguesInfoType = {
-    currentLeagueId: 1,
+    currentLeagueId: 2013,
 }
 
 let pagesInfoReducer = (state = pagesInfo, action: {type: string, newPage: number},) => {
     switch (action.type) {
         case "changeTeamsPageTo": 
-            console.log( action.newPage)
             return {...pagesInfo, teamsPage: action.newPage}
+        case "changeLeaguesPageTo": 
+            return {...pagesInfo, leaguesPage: action.newPage}
+        case "changeLeagueListPageTo": 
+            return {...pagesInfo, leaguePage: action.newPage}
+        case "changeTeamListPageTo": 
+            return {...pagesInfo, teamPage: action.newPage}
         default: 
             return state
     }

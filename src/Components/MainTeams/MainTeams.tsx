@@ -8,8 +8,9 @@ import Paginator from '../Paginator/Paginator';
 
 export default function MainTeams() {
     const dispatch = useDispatch()
-    const currentTeamPage = useSelector((store: RootStateType) => store.pagesInfoReducer.teamsPage)
+    const currentTeamsPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamsPage)
     const [teamsInfo, setTeamsInfo] = useState([])
+    const [maxPagesCount, setMaxPagesCount] = useState<number>(1)
 
     useEffect(() => {
         // const currentPath = window.location.pathname
@@ -19,9 +20,9 @@ export default function MainTeams() {
 
         const fetchData = async () => {
             try {
-                const response = await axios.get(`/v4/teams?limit=30&offset=${(currentTeamPage) * 30}`, {
+                const response = await axios.get(`/v4/teams?limit=30&offset=${(currentTeamsPage) * 30}`, {
                     headers: {
-                    'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                        'X-Auth-Token': process.env.REACT_APP_API_KEY,
                     },
                 });
 
@@ -33,12 +34,33 @@ export default function MainTeams() {
         };
 
         fetchData();
-    }, [currentTeamPage]);
+    }, [currentTeamsPage]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`/v4/teams?limit=10000`, {
+                    headers: {
+                        'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                    },
+                });
+
+                setMaxPagesCount(Math.ceil(response.data.count / 30))
+            } catch (error: any) {
+                if (error.message == 'Request failed with status code 429') {
+                    alert('Слишеом много запросов! Подождите')
+                }
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const onPageChange = (newPage: number) => {
-        console.log(`Switched to page ${newPage}`);
-        // Тут вычитаем 1 из newPage, чтобы согласовать с индексацией, начинающейся с 0 в Paginator
-        dispatch({ type: "changeTeamsPageTo", newPage: newPage });
+        if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentTeamsPage)) {
+            console.log(`Switched to page ${newPage + 1}`);
+            dispatch({ type: "changeTeamsPageTo", newPage: newPage });
+        }
     };
 
     return (
@@ -51,14 +73,14 @@ export default function MainTeams() {
                 <div className="main-teams__list">
                     {
                         teamsInfo.map((team: any, index) => 
-                            <NavLink className="main-teams__element" to={'team/' + team.id} onClick={() => {dispatch({type: "changeCurrentTeamId", newTeamId: team.id})}}>
-                                <h3 className="main-teams__name">{team.name}</h3>
+                            <NavLink className="main-teams__element" to={'team/' + team.id} key={team.id} onClick={() => {dispatch({type: "changeCurrentTeamId", newTeamId: team.id})}}>
+                                <h4 className="main-teams__name">{team.name}</h4>
                                 <img className="main-teams__image" src={team.crest} alt={team.name} />
                             </NavLink>
                         )
                     }
                 </div>
-                <Paginator pageCount={10} currentPage={currentTeamPage} onPageChange={onPageChange} />
+                <Paginator pageCount={maxPagesCount} currentPage={currentTeamsPage} onPageChange={onPageChange} />
             </div>
         </main>
     )

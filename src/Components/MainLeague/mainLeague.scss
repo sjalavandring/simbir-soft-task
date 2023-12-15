@@ -15,7 +15,7 @@
 
 .main-leagues__element {
     flex: 0 0 calc(33.33% - 20px);
-    height: 100px;
+    height: 140px;
     margin: 10px;
     text-align: center;
     border: 1px solid #ccc;
@@ -27,6 +27,10 @@
 }
 
 .main-leagues__name {
+    margin-top: 20px;
+}
+
+.main-leagues__country {
     margin-top: 20px;
 }
 
