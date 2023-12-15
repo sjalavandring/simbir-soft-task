@@ -15,26 +15,41 @@ export default function MainTeams() {
     const [teamsInfo, setTeamsInfo] = useState([]) //Информация о лигах, которую получаем запросм на api
     const [maxPagesCount, setMaxPagesCount] = useState<number>(1) //Общее число страниц
 
-    const debouncedFilter = useDebounce(teamsSearchFilter, 1000) //Задержка перед обновлением фильтра
+    const debouncedFilter = useDebounce(teamsSearchFilter, 500) //Задержка перед обновлением фильтра
 
     useEffect(() => {
-        // const currentPath = window.location.pathname
-        // const teamIdFromPath = currentPath.split('/teams/')[1];
-        // dispatch({type: 'changeTeamsPageTo', newPage: teamIdFromPath})
-        // console.log(currentPath, currentTeamPage)
-
+        //Если фильтра нет, запрашиваем по 30 элементов, если есть, запрашиваем весь массив, фильтруем, и выводим только элементы, соответствующие нужной странице
         const fetchData = async () => {
-            try {
-                const response = await axios.get(`/v4/teams?limit=30&offset=${(currentTeamsPage) * 30}`, {
-                    headers: {
-                        'X-Auth-Token': process.env.REACT_APP_API_KEY,
-                    },
-                });
+            if ( teamsSearchFilter == '')
+                try {
+                    const response = await axios.get(`/v4/teams?limit=30&offset=${(currentTeamsPage) * 30}`, {
+                        headers: {
+                            'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                        },
+                    });
 
-                //На каждой странице получаем 30 элементов для отображения начиная с номера страницы * 30
-                setTeamsInfo(response.data.teams) //Устанавливаем информацию о командах
-            } catch (error) {
-                console.error('Error fetching data:', error);
+                    //На каждой странице получаем 30 элементов для отображения начиная с номера страницы * 30
+                    setTeamsInfo(response.data.teams) //Устанавливаем информацию о командах
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            else if ( teamsSearchFilter != '') {
+                try {
+                    console.log(1)
+                    const response = await axios.get(`/v4/teams?limit=10000`, {
+                        headers: {
+                            'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                        },
+                    });
+    
+                    const filteredElements = response.data.teams.filter((item: any) => item.name.toLowerCase().includes(teamsSearchFilter.toLowerCase()));
+                    setTeamsInfo(filteredElements.slice(currentTeamsPage * 30, (currentTeamsPage + 1) * 30))
+                    setMaxPagesCount(Math.ceil(filteredElements.length / 30))
+                } catch (error: any) {
+                    if (error.message == 'Request failed with status code 429') {
+                        alert('Слишеом много запросов! Подождите')
+                    }
+                }
             }
         };
 
@@ -66,15 +81,15 @@ export default function MainTeams() {
         const fetchData = async () => {
             try {
                 console.log(1)
-                const response = await axios.get(`/v4/competitions`, {
+                const response = await axios.get(`/v4/teams?limit=10000`, {
                     headers: {
                         'X-Auth-Token': process.env.REACT_APP_API_KEY,
                     },
                 });
 
-                const filteredElements = response.data.competitions.filter((item: any) => item.name.toLowerCase().includes(teamsSearchFilter.toLowerCase()));
-                setTeamsInfo(filteredElements)
-                // setMaxPagesCount(Math.ceil(filteredElements.length / maxElementsOnPage))
+                const filteredElements = response.data.teams.filter((item: any) => item.name.toLowerCase().includes(teamsSearchFilter.toLowerCase()));
+                setTeamsInfo(filteredElements.slice(currentTeamsPage * 30, (currentTeamsPage + 1) * 30))
+                setMaxPagesCount(Math.ceil(filteredElements.length / 30))
             } catch (error: any) {
                 if (error.message == 'Request failed with status code 429') {
                     alert('Слишеом много запросов! Подождите')

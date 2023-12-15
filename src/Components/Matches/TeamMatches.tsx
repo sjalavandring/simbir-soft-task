@@ -9,15 +9,15 @@ import Paginator from '../Paginator/Paginator';
 export default function TeamMatches() {
     const dispatch = useDispatch()
     const currentTeamPage = useSelector((state: RootStateType) => state.teamsInfoReducer.currentTeamId) //Страница Команд, с которой был переход
-    const currentTeamMatchesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamPage) //
-    const [matchesInfo, setMatchesInfo] = useState([])
-    const [currentTeamName, setCurrentTeamName] = useState('')
+    const currentTeamMatchesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamPage) //Текущая страница матчей команды
+    const [matchesInfo, setMatchesInfo] = useState([]) //Информация о матчах команды
+    const [currentTeamName, setCurrentTeamName] = useState('') //Имя выбранной команды. Нужно для навигации
 
-    const [startDate, setStartDate] = useState<string | undefined>();
+    const [startDate, setStartDate] = useState<string | undefined>(); //Фильтры для сортировке игр по датам 
     const [endDate, setEndDate] = useState<string | undefined>('');
-    const [maxPagesCount, setMaxPagesCount] = useState<any>(1)
-    const [dataLoadingStatus, setLoadingStatus] = useState<string>('Данные загружаются')
-    const maxElementsOnPage = 7;
+    const [maxPagesCount, setMaxPagesCount] = useState<any>(1) //Максимальное число страниц для пагинатора
+    const [dataLoadingStatus, setLoadingStatus] = useState<string>('Данные загружаются') // Статус загрузки данных
+    const maxElementsOnPage = 7; //Максимум элементов на странице
 
     // useEffect(() => {
     //     console.log(currentTeamPage)
@@ -38,7 +38,7 @@ export default function TeamMatches() {
                 console.error('Error fetching data:', error);
                 setLoadingStatus('Нет доступа к данным')
             }
-        };
+        }; 
 
         fetchData();
 
@@ -56,6 +56,7 @@ export default function TeamMatches() {
             }
         };
         fecthLeagueName()
+        //Сначала получаем максимальное число страниц, а следующим запросом получаем имя текущей команды для навигации
     }, []);
 
     useEffect(() => {
@@ -75,8 +76,7 @@ export default function TeamMatches() {
                 setLoadingStatus('Нет доступа к данным')
             }
         };
-
-        fetchData();
+        //Каждый раз, когда меняется страница, получаем список матчей для этой страницы
     }, [currentTeamMatchesPage]);
 
     useEffect(() => {
@@ -93,7 +93,6 @@ export default function TeamMatches() {
               dispatch({ type: "changeTeamListPageTo", newPage: 0 });
               setMaxPagesCount(Math.ceil(response.data.matches.length / maxElementsOnPage))
               setMatchesInfo(() => response.data.matches.slice(((currentTeamMatchesPage) * maxElementsOnPage) , (currentTeamMatchesPage + 1) * maxElementsOnPage))
-              console.log(matchesInfo, ((currentTeamMatchesPage) * maxElementsOnPage),(currentTeamMatchesPage + 1) * maxElementsOnPage)
             } catch (error) {
               console.error('Error fetching data:', error);
             }
@@ -101,7 +100,7 @@ export default function TeamMatches() {
       
           fetchData();
         }
-    }, [startDate, endDate]);
+    }, [startDate, endDate]); //фильтрация по дате. когда оба поля заполнены, страница сбрасывается до 1, Пересчитывается максимальное число страниц и получается список матчей для страницы
 
     const onPageChange = (newPage: number) => {
         if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentTeamMatchesPage)) {

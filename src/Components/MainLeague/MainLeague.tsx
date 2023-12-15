@@ -16,7 +16,7 @@ export default function MainLeague() {
   const [maxPagesCount, setMaxPagesCount] = useState<number>(1) //Максимальное число страниц, на которое разделены все лиги. Нужно для Правильного от ображения пагинатора
 
   const maxElementsOnPage = 15;  //максимальное число лиг на одной странице
-  const debouncedFilter = useDebounce(leaguesSeacrhFilter, 1000) //Значение фильтра обновляется не сразу, а только если оно не обновляется снова за 1000ms, чтобы не отправлять лишние запросы
+  const debouncedFilter = useDebounce(leaguesSeacrhFilter, 500) //Значение фильтра обновляется не сразу, а только если оно не обновляется снова за 1000ms, чтобы не отправлять лишние запросы
 
   useEffect(() => {
     const fetchData = async () => {
