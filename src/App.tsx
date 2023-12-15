@@ -19,7 +19,7 @@ function App() {
         <Route path='teams/' element={<MainTeams />}/>
         <Route path='teams/:page' element={<MainTeams />}/>
         <Route path='teams/:page/team/*' element={<Team />}/>
-        <Route path='/*' element={<NotFound/>} />
+        <Route path='/*' element={<NotFound/>} /> {/*Если страница по адресу не определена, отображается NotFound страница*/}
       </Routes>
     </BrowserRouter>
   );

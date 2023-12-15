@@ -13,6 +13,7 @@ export default function Header() {
         <div className="header-content container">
             <div className="header__logo">
               <NavLink to="/"><img className="header__logo-image" src={logo} alt="logo" /></NavLink>
+              {/* Лого ведет на главную страницу */}
             </div>
             <nav className="header__nav-menu">
                 <NavLink className="header__nav-menu-item" to={"/leagues/" + currentLeaguePage}>Лиги</NavLink>

@@ -5,12 +5,17 @@ import { NavLink} from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStateType } from '../../store/store';
 import Paginator from '../Paginator/Paginator';
+import { useDebounce } from '@uidotdev/usehooks';
 
 export default function MainTeams() {
     const dispatch = useDispatch()
+    const teamsSearchFilter = useSelector((state: RootStateType) => state.searchInfoReducer.teamsSearchFilter)
     const currentTeamsPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamsPage)
-    const [teamsInfo, setTeamsInfo] = useState([])
-    const [maxPagesCount, setMaxPagesCount] = useState<number>(1)
+    
+    const [teamsInfo, setTeamsInfo] = useState([]) //Информация о лигах, которую получаем запросм на api
+    const [maxPagesCount, setMaxPagesCount] = useState<number>(1) //Общее число страниц
+
+    const debouncedFilter = useDebounce(teamsSearchFilter, 1000) //Задержка перед обновлением фильтра
 
     useEffect(() => {
         // const currentPath = window.location.pathname
@@ -26,8 +31,8 @@ export default function MainTeams() {
                     },
                 });
 
-                // console.log(response.data.teams);
-                setTeamsInfo(response.data.teams)
+                //На каждой странице получаем 30 элементов для отображения начиная с номера страницы * 30
+                setTeamsInfo(response.data.teams) //Устанавливаем информацию о командах
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -54,20 +59,44 @@ export default function MainTeams() {
         };
 
         fetchData();
-    }, []);
+    }, []);  //При первой загрузке высчитываем общее число страниц
+
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                console.log(1)
+                const response = await axios.get(`/v4/competitions`, {
+                    headers: {
+                        'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                    },
+                });
+
+                const filteredElements = response.data.competitions.filter((item: any) => item.name.toLowerCase().includes(teamsSearchFilter.toLowerCase()));
+                setTeamsInfo(filteredElements)
+                // setMaxPagesCount(Math.ceil(filteredElements.length / maxElementsOnPage))
+            } catch (error: any) {
+                if (error.message == 'Request failed with status code 429') {
+                    alert('Слишеом много запросов! Подождите')
+                }
+            }
+        };
+
+        fetchData();
+    }, [debouncedFilter]) //Фильтрация
 
     const onPageChange = (newPage: number) => {
         if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentTeamsPage)) {
             console.log(`Switched to page ${newPage + 1}`);
             dispatch({ type: "changeTeamsPageTo", newPage: newPage });
         }
-    };
+    }; //Изменение текуей страницы с командами в пагинаторе
 
     return (
         <main className="main main-teams">
             <div className="main-teams-content container">
                 <div className="main-search">
-                    <input className="main-search__field" type="text" placeholder="Поиск"/>
+                    <input className="main-search__field" type="text" placeholder="Поиск" onChange={(e) => ( dispatch({type: "changeTeamsFilter", newFilter: e.target.value}))}/>
                     <img className="main-search__icon" src={searchIcon} alt="serachIcon" />
                 </div>
                 <div className="main-teams__list">

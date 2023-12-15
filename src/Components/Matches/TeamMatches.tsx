@@ -8,9 +8,10 @@ import Paginator from '../Paginator/Paginator';
 //Компонент высшего порядка, возвращающий 
 export default function TeamMatches() {
     const dispatch = useDispatch()
-    const currentTeamPage = useSelector((state: RootStateType) => state.teamsInfoReducer.currentTeamId)
-    const currentTeamMatchesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamPage)
+    const currentTeamPage = useSelector((state: RootStateType) => state.teamsInfoReducer.currentTeamId) //Страница Команд, с которой был переход
+    const currentTeamMatchesPage = useSelector((state: RootStateType) => state.pagesInfoReducer.teamPage) //
     const [matchesInfo, setMatchesInfo] = useState([])
+    const [currentTeamName, setCurrentTeamName] = useState('')
 
     const [startDate, setStartDate] = useState<string | undefined>();
     const [endDate, setEndDate] = useState<string | undefined>('');
@@ -40,6 +41,21 @@ export default function TeamMatches() {
         };
 
         fetchData();
+
+        const fecthLeagueName = async () => {
+            try {
+                const response = await axios.get(`/v4/teams/${currentTeamPage}`, {
+                    headers: {
+                    'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                    },
+                });
+                console.log(response.data)
+                setCurrentTeamName(response.data.name)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fecthLeagueName()
     }, []);
 
     useEffect(() => {
@@ -94,7 +110,7 @@ export default function TeamMatches() {
         }
     };  
 
-    let breadcrumbsPath = "Команды/Название команды".split('/')
+    let breadcrumbsPath = `Команды/${currentTeamName ? currentTeamName : 'Загрузка..'}`.split('/')
     return (
         <div className="matches-content container">
             <div className="breadcrumbs">

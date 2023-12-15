@@ -1,5 +1,7 @@
 import { combineReducers, createStore} from 'redux'
 
+//Разделить редюсеры по файлам
+
 type PagesInfoType = {
     teamsPage: number,
     leaguesPage: number,
@@ -63,7 +65,7 @@ let pagesInfoReducer = (state = pagesInfo, action: {type: string, newPage: numbe
         default: 
             return state
     }
-}
+} //Редючер для управления Текущей странице Лиг, Команд, Игр лиги и Игр команды
 
 let teamsInfoReducer = (state = teamsInfo, action: {type: string, newTeamId: number},) => {
     switch (action.type) {
@@ -72,7 +74,7 @@ let teamsInfoReducer = (state = teamsInfo, action: {type: string, newTeamId: num
         default: 
             return state
     }
-}
+} //Id команды, на страницу которой выполняется переход
 
 let leaguesInfoReducer = (state = leaguesInfo, action: {type: string, newLeagueId: number},) => {
     switch (action.type) {
@@ -92,12 +94,12 @@ let searchInfoReducer = (state = searchInfo, action: {type: string, newFilter: '
         default: 
             return state
     }
-}
+} //Фильтры для строки поиска в разделе Команды и Лиги соответственно
 
-const rootReducer = combineReducers({pagesInfoReducer, teamsInfoReducer, leaguesInfoReducer, searchInfoReducer})
+const rootReducer = combineReducers({pagesInfoReducer, teamsInfoReducer, leaguesInfoReducer, searchInfoReducer}) 
 
 const store = createStore(rootReducer)
 
-export type {RootStateType}
+export type {RootStateType} //Общий тип для store
 
 export {store}

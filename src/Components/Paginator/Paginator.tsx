@@ -4,7 +4,7 @@ type PaginatorProps = {
   pageCount: number;
   currentPage: number;
   onPageChange: (newPage: number) => void;
-};
+}; // Пагинатор принимает на вход
 
 const Paginator = ({ pageCount, currentPage, onPageChange }: PaginatorProps) => {
   const renderPageNumbers = () => {
@@ -22,12 +22,12 @@ const Paginator = ({ pageCount, currentPage, onPageChange }: PaginatorProps) => 
       >
         {pageNumber + 1}
       </div>
-    ));
+    )); //Все кнопки страниц в пагинаторе
 
     if (startPage > 0) {
       // Вставляем точки и страницу перед начальной
       pages.unshift(
-        <React.Fragment key="ellipsis-start">
+        <React.Fragment key="start">
           <div onClick={() => onPageChange(0)} className={"page-number" + (0 === currentPage ? " page-number_active" : '')}>
             1
           </div>
@@ -39,7 +39,7 @@ const Paginator = ({ pageCount, currentPage, onPageChange }: PaginatorProps) => 
     if (endPage < pageCount - 1) {
       // Вставляем точки и страницу после конечной
       pages.push(
-        <React.Fragment key="ellipsis-end">
+        <React.Fragment key="end">
           <div>...</div>
           <div onClick={() => onPageChange(pageCount - 1)} className={"page-number" + (pageCount - 1 === currentPage ? " page-number_active" : '')}>
             {pageCount}
@@ -58,7 +58,7 @@ const Paginator = ({ pageCount, currentPage, onPageChange }: PaginatorProps) => 
       </div>
       {renderPageNumbers()}
       <div onClick={() => onPageChange(currentPage + 1)} className="paginator-arrow">
-        {'>'}
+        {'>'} {/*Стрелки для переключения пагинатора*/}
       </div>
     </div>
   );
