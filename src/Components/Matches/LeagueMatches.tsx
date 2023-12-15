@@ -13,6 +13,7 @@ export default function LeagueMatches() {
     const currentLeagueMatchesPage =  useSelector((state: RootStateType) => state.pagesInfoReducer.leaguePage)
 
     const [matchesInfo, setMatchesInfo] = useState([])
+    const [currentLeagueName, setCurrentLeagueName] = useState('')
     
     const [startDate, setStartDate] = useState <string | undefined>();
     const [endDate, setEndDate] = useState<string | undefined>('');
@@ -38,6 +39,21 @@ export default function LeagueMatches() {
         };
 
         fetchData();
+
+        const fecthLeagueName = async () => {
+            try {
+                const response = await axios.get(`/v4/competitions/${currentleaguePage}`, {
+                    headers: {
+                    'X-Auth-Token': process.env.REACT_APP_API_KEY,
+                    },
+                });
+
+                setCurrentLeagueName(response.data.name)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fecthLeagueName()
     }, []);
 
     useEffect(() => {
@@ -85,6 +101,7 @@ export default function LeagueMatches() {
         }
     }, [startDate, endDate]);
 
+
     const onPageChange = (newPage: number) => {
         if ((newPage >= 0) && (newPage < maxPagesCount) && (newPage != currentLeagueMatchesPage)) {
             console.log(`Switched to page ${newPage + 1}`);
@@ -92,7 +109,7 @@ export default function LeagueMatches() {
         }
     };  
 
-    let breadcrumbsPath = `Лига/Название Лиги`.split('/')
+    let breadcrumbsPath = `Лига/${currentLeagueName ? currentLeagueName : 'Загрузка...'}`.split('/')
     return (
         <div className="matches-content container">
             <div className="breadcrumbs">
