@@ -1,25 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import Header from './Components/Header/Header';
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import MainLeague from './Components/MainLeague/MainLeague';
+import MainTeams from './Components/MainTeams/MainTeams';
+import NotFound from './Components/NotFound/NotFound';
+import League from './Components/MainLeague/League';
+import Team from './Components/MainTeams/Team';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Header/>
+      <Routes>
+        <Route path='/' element={<Navigate to="leagues/page=:page" />} />
+        <Route path='leagues/:page' element={<MainLeague />}/>
+        <Route path='leagues/:page/league/*' element={<League />} />
+        <Route path='teams/' element={<MainTeams />}/>
+        <Route path='teams/:page' element={<MainTeams />}/>
+        <Route path='teams/:page/team/*' element={<Team />}/>
+        <Route path='/*' element={<NotFound/>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

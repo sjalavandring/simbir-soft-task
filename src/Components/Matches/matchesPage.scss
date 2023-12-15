@@ -1,0 +1,65 @@
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumbs__item {
+    font-size: 20px;
+    &:not(:last-child) {
+        margin-right: 15px;
+    }
+}
+
+.matches {
+    margin-top: 30px ;
+}
+
+.matches-title {
+    margin: 10px 0;
+}
+
+.matches-date {
+    margin: 10px 0;
+}
+
+.date__date-picker {
+    height: 25px;
+    margin: 0 10px;
+    padding: 0 10px;
+    border: 1px solid #000;
+    border-radius: 2px;
+}
+
+.matches-list__match {
+    display: flex;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 2px;
+}
+
+.match-info {
+    // margin-right: 40px;
+    text-align: center;
+    flex: 1
+}
+
+
+/* Добавляем отступ снизу для всех li, кроме последнего в строке */
+.matches-list__match:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 799px) {
+    .matches-list__match {
+        margin: 0;
+        padding: 5px;
+        border: 1px solid #000;
+        border-radius: 2px;
+    }
+
+    .match-info {
+        font-size: 10px;
+        margin-right: 10px;
+    }
+}

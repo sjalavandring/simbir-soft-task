@@ -1,0 +1,22 @@
+.paginator-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+  
+.page-number {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    margin: 0 5px;
+}
+
+.page-number_active {
+    font-weight: bold;
+}
+
+.paginator-arrow {
+    cursor: pointer;
+    margin: 0 10px;
+}

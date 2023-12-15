@@ -1,0 +1,37 @@
+.league {
+    background-color: #fff;
+}
+
+.main-leagues {
+    background-color: #fff;
+}
+
+.main-leagues__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0 -10px;
+}
+
+.main-leagues__element {
+    flex: 0 0 calc(33.33% - 20px);
+    height: 100px;
+    margin: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: inline-block;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-leagues__name {
+    margin-top: 20px;
+}
+
+@media (max-width: 1199px) {
+    .main-leagues__element {
+        flex: 0 0 calc(50% - 20px);
+    }
+}
